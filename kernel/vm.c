@@ -432,3 +432,26 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+
+void vmwalk(pagetable_t pagetable, int depth)
+{
+    for (int i = 0; i < 512; i++) {
+        pte_t pte = pagetable[i];
+        if (pte & PTE_V) {
+            for (int j = 0; j < depth; j++)
+                printf(".. ");
+            printf("..");
+            printf("%d: pte %p pa %p\n", i, pte, PTE2PA(pte));
+            uint64 child = PTE2PA(pte);
+            if ((pte & (PTE_R | PTE_W | PTE_X)) == 0) // 一个物理页面总是有读写、执行权限的一种，页表项没有
+                vmwalk((pagetable_t) child, depth + 1);
+        }
+    }
+}
+
+void vmprint(pagetable_t pagetable)
+{
+    printf("page table %p\n", pagetable);
+    vmwalk(pagetable, 0);
+}
