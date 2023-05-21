@@ -84,7 +84,7 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
     panic("walk");
 
   for(int level = 2; level > 0; level--) {
-    pte_t *pte = &pagetable[PX(level, va)];
+    pte_t *pte = &pagetable[PX(level, va)]; // 每个页表项存储指向pte的指针
     if(*pte & PTE_V) {
       pagetable = (pagetable_t)PTE2PA(*pte);
     } else {

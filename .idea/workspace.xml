@@ -15,7 +15,8 @@
     <list default="true" id="58c38c37-d1f4-4192-b398-12e0dd746496" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kernel/defs.h" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/defs.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kernel/exec.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/exec.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/riscv.h" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/riscv.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/sysproc.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/sysproc.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kernel/vm.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/vm.c" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -112,7 +113,7 @@
       <workItem from="1684498215755" duration="8613000" />
       <workItem from="1684566074879" duration="1935000" />
       <workItem from="1684574902653" duration="5524000" />
-      <workItem from="1684591322588" duration="2345000" />
+      <workItem from="1684591322588" duration="7398000" />
     </task>
     <servers />
   </component>
