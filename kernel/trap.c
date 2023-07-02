@@ -65,8 +65,28 @@ usertrap(void)
     intr_on();
 
     syscall();
+  } else if (r_scause() == 15) {
+      pte_t *pte;
+      uint64 va = PGROUNDDOWN(r_stval());
+      uint64 ka;
+      char *mem;
+      if((pte = walk(p->parent->pagetable, va, 0)) == 0)
+          panic("usertrap: pte should exist");
+      if ((*pte & PTE_V) == 0)
+          panic("usertrap: page not present");
+      pa = PTE2PA(*pte);
+      *pte = *pte & PTE_W;
+      flags = PTE_FLAGS(*pte);
+      if ((mem == kalloc()) == 0)
+          panic("usertrap: failed to alloc pa");
+      memmove(mem, (char*)pa, PGSIZE);
+      if (mappages(p->pagetable, va, PGSIZE, mem, flags) != 0) {
+          kfree(mem);
+          panic("usertrap: mappages failed");
+      }
   } else if((which_dev = devintr()) != 0){
-    // ok
+          // ok
+      }
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
