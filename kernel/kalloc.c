@@ -23,6 +23,34 @@ struct {
   struct run *freelist;
 } kmem;
 
+struct {
+    struct spinlock lock;
+    unsigned int cnt[(PHYSTOP - KERNBASE) / PGSIZE];
+} refcnt;
+
+void increment_refcnt(uint64 pa, int n) {
+    acquire(&refcnt.lock);
+    refcnt.cnt[(pa - KERNBASE) / PGSIZE] += n;
+    release(&refcnt.lock);
+}
+
+int get_refcnt(uint64 pa) {
+    return refcnt.cnt[(pa - KERNBASE) / PGSIZE];
+}
+
+void set_refcnt(uint64 pa, int n) {
+    acquire(&refcnt.lock);
+    refcnt.cnt[(pa - KERNBASE) / PGSIZE] = n;
+    release(&refcnt.lock);
+}
+void acquire_refcnt() {
+    acquire(&refcnt.lock);
+}
+
+void release_refcnt() {
+    release(&refcnt.lock);
+}
+
 void
 kinit()
 {
@@ -48,18 +76,24 @@ kfree(void *pa)
 {
   struct run *r;
 
+  if (get_refcnt((uint64)pa) > 1) {
+      increment_refcnt((uint64)pa, -1);
+      return;
+  }
+
   if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
     panic("kfree");
 
   // Fill with junk to catch dangling refs.
   memset(pa, 1, PGSIZE);
-
   r = (struct run*)pa;
 
   acquire(&kmem.lock);
   r->next = kmem.freelist;
   kmem.freelist = r;
   release(&kmem.lock);
+
+  set_refcnt((uint64)pa, 0);
 }
 
 // Allocate one 4096-byte page of physical memory.
@@ -78,5 +112,7 @@ kalloc(void)
 
   if(r)
     memset((char*)r, 5, PGSIZE); // fill with junk
+  if (r)
+    increment_refcnt((uint64)r, 1);
   return (void*)r;
 }
