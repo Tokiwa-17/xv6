@@ -67,8 +67,10 @@ usertrap(void)
     syscall();
   } else if (r_scause() == 15) {
       uint64 va = PGROUNDDOWN(r_stval());
-      if (cowcopy(va) == -1)
-          p->killed = 1;
+      if (uncopied_cow(p->pagetable, PGROUNDDOWN(r_stval())) > 0) {
+          if (cowcopy(va) == -1)
+              p->killed = 1;
+      }
   } else if((which_dev = devintr()) != 0){
           // ok
   } else {
