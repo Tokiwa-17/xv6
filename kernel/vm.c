@@ -385,11 +385,13 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
     int res = uncopied_cow(pagetable, va0);
     pa0 = walkaddr(pagetable, va0);
     if (res > 0) {
-      if (cowcopy(pa0) != 0)
-          return -1;
+      if (cowcopy(va0) != 0)
+          goto bad;
+    } else if (res < 0){
+        goto bad;
     }
     if(pa0 == 0)
-      return -1;
+        goto bad;
     n = PGSIZE - (dstva - va0);
     if(n > len)
       n = len;
@@ -400,6 +402,8 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
     dstva = va0 + PGSIZE;
   }
   return 0;
+  bad:
+    return -1;
 }
 
 // Copy from user to kernel.

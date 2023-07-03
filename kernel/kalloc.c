@@ -50,12 +50,12 @@ set_refcnt(uint64 pa, int n) {
     refcnt.cnt[pgindex(pa)] = n;
 }
 
-void
+inline void
 acquire_refcnt() {
     acquire(&refcnt.lock);
 }
 
-void
+inline void
 release_refcnt() {
     release(&refcnt.lock);
 }
@@ -90,12 +90,12 @@ kfree(void *pa)
 {
   struct run *r;
 
+  if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
+    panic("kfree");
+
   increment_refcnt((uint64)pa, -1);
   if (get_refcnt((uint64)pa) != 0)
       return;
-
-  if(((uint64)pa % PGSIZE) != 0 || (char*)pa < end || (uint64)pa >= PHYSTOP)
-    panic("kfree");
 
   // Fill with junk to catch dangling refs.
   memset(pa, 1, PGSIZE);
