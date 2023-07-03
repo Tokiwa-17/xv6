@@ -61,7 +61,6 @@ void            ramdiskrw(struct buf*);
 
 // kalloc.c
 void*           kalloc(void);
-void*           kalloc_init(void);
 void            kfree(void *);
 void            kinit(void);
 void            increment_refcnt(uint64, int);
@@ -178,7 +177,6 @@ int             copyin(pagetable_t, char *, uint64, uint64);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
 int             cowcopy(uint64);
 int             uncopied_cow(pagetable_t, uint64);
-//uint64          walk(pagetable_t, uint64, int);
 
 // plic.c
 void            plicinit(void);

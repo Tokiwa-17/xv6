@@ -383,13 +383,13 @@ copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len)
   while(len > 0){
     va0 = PGROUNDDOWN(dstva);
     int res = uncopied_cow(pagetable, va0);
-    pa0 = walkaddr(pagetable, va0);
     if (res > 0) {
       if (cowcopy(va0) != 0)
           goto bad;
     } else if (res < 0){
         goto bad;
     }
+    pa0 = walkaddr(pagetable, va0);
     if(pa0 == 0)
         goto bad;
     n = PGSIZE - (dstva - va0);
